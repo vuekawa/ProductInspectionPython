@@ -6,12 +6,14 @@ import DobotDllType as DobotDll
 
 class MainApplication:
     def __init__(self, window):
+        
         self.window = window
+        self.window.config(padx = 10, pady = 10)
         self.api = DobotDll.load()
         
         # Initialization of the camera frame
         self.canvas = tk.Canvas(window, width = 640, height = 480)
-        self.canvas.grid(row = 0, column = 0, columnspan = 60, rowspan = 6)
+        self.canvas.grid(row = 0, column = 0, columnspan = 60, rowspan = 6, padx = 5)
         
         ######################################################################
         ####################### Camera buttons ############################### 
@@ -31,12 +33,12 @@ class MainApplication:
         ######################################################################
         
         self.group1 = tk.LabelFrame(self.window, text = "Control Robot", padx = 10, pady = 10, width = 300, height = 380)
-        self.group1.grid(row = 0, column = 75,rowspan = 3, columnspan = 15)
+        self.group1.grid(row = 0, column = 75, rowspan = 3, columnspan = 15)
         
-        self.connectBtn = tk.Button(self.group1, text = "Connect", command = self.ConnectDobot, padx = 0, pady = 0, width = 25, height = 1)
+        self.connectBtn = tk.Button(self.group1, text = "Connect", command = self.ConnectBtn_Click, padx = 0, pady = 0, width = 25, height = 1)
         self.connectBtn.grid(row = 0, column = 0, columnspan = 3)
         
-        
+
         # Label and values for each angle joint
         self.jointAngle_label = tk.Label(self.group1, text = "Joint Angle")
         self.jointAngle_label.grid(row = 1, column = 0, padx = 0, pady = 5)
@@ -58,6 +60,15 @@ class MainApplication:
         self.coord_label = tk.Label(self.group1, text = "Coordinates")
         self.coord_label.grid(row = 1, column = 2, padx = 0, pady = 5)
         
+#        self.pos_list = []
+#        self.jointAngle_list = []
+#        for i in range(4):
+#            self.jointAngle_list.append(tk.Label(self.group1, text = "0.00"))
+#            self.jointAngle_list[i].grid(row = i + 2, column = 0, padx = 0, pady = 5)
+#
+#            self.pos_list.append(tk.Label(self.group1, text = "0.00"))
+#            self.pos_list[i].grid(row = i + 2, column = 2, padx = 0, pady = 5)
+
         self.posX = tk.Label(self.group1, text = "0.00")
         self.posX.grid(row = 2, column = 2, padx = 0, pady = 5)
         
@@ -71,40 +82,55 @@ class MainApplication:
         self.posR.grid(row = 5, column = 2, padx = 0, pady = 5)
         
         
-        # Entry box for each coordinate       
-        self.goX = tk.Spinbox(self.group1, from_= -300, to = 300, textvariable = tk.StringVar(self.window, "0"))
-        self.goX.config(width = 5)
+        # Entry box for each coordinate     
+
+#        self.go_list = []
+#        for i in range(3):
+#            self.go_list.append(tk.Spinbox(self.group1, from_= -300, to = 300, textvariable = tk.StringVar(self.window, "0"), width = 5))
+#            self.go_list[i].grid(row = i + 2, column = 3)      
+            
+        self.goX = tk.Spinbox(self.group1, from_= -300, to = 300, textvariable = tk.StringVar(self.window, "0"), width = 5)
         self.goX.grid(row = 2, column = 3)
         
-        self.goY = tk.Spinbox(self.group1, from_= -300, to = 300, textvariable = tk.StringVar(self.window, "0"))
-        self.goY.config(width = 5)
+        self.goY = tk.Spinbox(self.group1, from_= -300, to = 300, textvariable = tk.StringVar(self.window, "0"), width = 5)
         self.goY.grid(row = 3, column = 3)
         
-        self.goZ = tk.Spinbox(self.group1, from_= -300, to = 300, textvariable = tk.StringVar(self.window, "0"))
-        self.goZ.config(width = 5)
+        self.goZ = tk.Spinbox(self.group1, from_= -300, to = 300, textvariable = tk.StringVar(self.window, "0"), width = 5)
         self.goZ.grid(row = 4, column = 3)
         
         self.goBtn = tk.Button(self.group1, text = "GO", command = self.GoBtn_Click, width = 5, height = 1)
         self.goBtn.grid(row = 5, column = 3)
         
         
-        # Buttons to move the robot
+        # Buttons to move the robot        
         self.moveXP = tk.Button(self.group1, text = "X+", width = 5, height = 1)
+        self.moveXP.bind("<ButtonPress>", lambda event, button = "moveXP" : self.OnMove(button))
+        self.moveXP.bind("<ButtonRelease>", lambda event, button = "release" : self.OnMove(button))
         self.moveXP.grid(row = 7, column = 0)
         
         self.moveYP = tk.Button(self.group1, text = "Y+", width = 5, height = 1)
+        self.moveYP.bind("<ButtonPress>", lambda event, button = "moveYP" : self.OnMove(button))
+        self.moveYP.bind("<ButtonRelease>", lambda event, button = "release" : self.OnMove(button))
         self.moveYP.grid(row = 6, column = 1)
         
         self.moveZP = tk.Button(self.group1, text = "Z+", width = 5, height = 1)
+        self.moveZP.bind("<ButtonPress>", lambda event, button = "moveZP" : self.OnMove(button))
+        self.moveZP.bind("<ButtonRelease>", lambda event, button = "release" : self.OnMove(button))
         self.moveZP.grid(row = 6, column = 3, pady = 5)
         
         self.moveXM = tk.Button(self.group1, text = "X-", width = 5, height = 1)
+        self.moveXM.bind("<ButtonPress>", lambda event, button = "moveXM" : self.OnMove(button))
+        self.moveXM.bind("<ButtonRelease>", lambda event, button = "release" : self.OnMove(button))
         self.moveXM.grid(row = 7, column = 2)
         
         self.moveYM = tk.Button(self.group1, text = "Y-", width = 5, height = 1)
+        self.moveYM.bind("<ButtonPress>", lambda event, button = "moveYM" : self.OnMove(button))
+        self.moveYM.bind("<ButtonRelease>", lambda event, button = "release" : self.OnMove(button))
         self.moveYM.grid(row = 8, column = 1)
         
         self.moveZM = tk.Button(self.group1, text = "Z-", width = 5, height = 1)
+        self.moveZM.bind("<ButtonPress>", lambda event, button = "moveZM" : self.OnMove(button))
+        self.moveZM.bind("<ButtonRelease>", lambda event, button = "release" : self.OnMove(button))
         self.moveZM.grid(row = 8, column = 3)
         
         ######################################################################
@@ -116,13 +142,13 @@ class MainApplication:
         
    
         # Buttons to define each position
-        self.defPos1 = tk.Button(self.group2, text = "Pos1", width = 5)
+        self.defPos1 = tk.Button(self.group2, text = "Pos1", command = lambda button = "Pos1": self.DefPos_Click(button), width = 5)
         self.defPos1.grid(row = 0, column = 0)
         
-        self.defPos2 = tk.Button(self.group2, text = "Pos2", width = 5)
+        self.defPos2 = tk.Button(self.group2, text = "Pos2", command = lambda button = "Pos2": self.DefPos_Click(button), width = 5)
         self.defPos2.grid(row = 0, column = 1, padx = 20)
         
-        self.defPos3 = tk.Button(self.group2, text = "Pos3", width = 5)
+        self.defPos3 = tk.Button(self.group2, text = "Pos3", command = lambda button = "Pos3": self.DefPos_Click(button), width = 5)
         self.defPos3.grid(row = 0, column = 2)
         
         self.defCoord = tk.Label(self.group2, text = "Defined Coordinates")
@@ -130,6 +156,14 @@ class MainApplication:
         
         
         # Coordinates of defined position 1
+#        self.PosLabels_list = []
+#        for i in range(3):
+#            for j in range(3):
+#                self.PosLabels_list.append(tk.Label(self.group2, text = "0.00"))
+#                self.PosLabels_list[-1].grid(row = j+2, column = i)
+#                
+#        self.PosLabels_list[4].config(pady = 5)
+            
         self.def_X = tk.Label(self.group2, text = "0.00")
         self.def_X.grid(row = 2, column = 0)
         
@@ -183,7 +217,6 @@ class MainApplication:
     def PhotoBtn_Click(self):
         if self.LiveBtn.cget("text") == "Go Live":
             self.vid = MyVideoCapture(0)
-
         else:
             self.LiveBtn.config(text = "Go Live")
         
@@ -198,7 +231,6 @@ class MainApplication:
         # Get a frame from the video source
         try:
             ret, frame = self.vid.get_frame()
- 
             if ret:
                 self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
                 self.canvas.create_image(0, 0, image = self.photo, anchor = tk.NW)
@@ -207,21 +239,48 @@ class MainApplication:
             pass
 
     ######################################################################
+    ################# Data Acquisition Methods ########################### 
+    ######################################################################  
+    
+    def DefPos_Click(self, button):
+#        btnIndex = int(button[-1])
+#        for i in range(3):
+#            self.PosLabels_list[btnIndex+i-1].config(text = self.pos_list[i].cget("text"))
+        
+        if button == "Pos1":
+            self.def_X.config(text = self.posX.cget("text"))
+            self.def_Y.config(text = self.posY.cget("text"))
+            self.def_Z.config(text = self.posZ.cget("text"))
+        if button == "Pos2":
+            self.def_X2.config(text = self.posX.cget("text"))
+            self.def_Y2.config(text = self.posY.cget("text"))
+            self.def_Z2.config(text = self.posZ.cget("text"))
+        if button == "Pos3":
+            self.def_X3.config(text = self.posX.cget("text"))
+            self.def_Y3.config(text = self.posY.cget("text"))
+            self.def_Z3.config(text = self.posZ.cget("text"))
+        
+    ######################################################################
     ################### Robot Control Methods ############################ 
     ######################################################################  
 
-    def ConnectDobot(self):
+    def ConnectBtn_Click(self):
         if self.connectBtn.cget("text") == "Connect":
             self.connectBtn.config(text = "Disconnect")
-            self.state = DobotDll.ConnectDobot(self.api, "", 115200)     
+            self.state = DobotDll.ConnectDobot(self.api, "", 115200)[0]
+            DobotDll.SetQueuedCmdClear(self.api)
             self.OnMonitoring()
         else:
             self.connectBtn.config(text = "Connect")
-            DobotDll.SetQueuedCmdClear(self.api)
             DobotDll.DisconnectDobot(self.api)
             
     def OnMonitoring(self):
         if self.connectBtn.cget("text") == "Disconnect":
+#            for i in range(4):
+#                self.pos_list[i].config(text = str(round(DobotDll.GetPose(self.api)[i],2)))
+#                self.jointAngle_list[i].config(text = str(round(DobotDll.GetPose(self.api)[i+4],2)))
+#            self.window.after(15, self.OnMonitoring)
+                
             self.posX.config(text = str(round(DobotDll.GetPose(self.api)[0],2)))
             self.posY.config(text = str(round(DobotDll.GetPose(self.api)[1],2)))
             self.posZ.config(text = str(round(DobotDll.GetPose(self.api)[2],2)))
@@ -254,17 +313,41 @@ class MainApplication:
             cmd = DobotDll.JC.JogDNPressed
         DobotDll.SetJOGCmd(self.api, 0, cmd)
         
+    def OnMove(self, button):
+        x = y = z = 0
+        delta = 1
+        if button != "release":
+            if button == "moveXP":
+                x += delta
+            if button == "moveXM":
+                x -= delta
+            if button == "moveYP":
+                y += delta
+            if button == "moveYM":
+                y -= delta
+            if button == "moveZP":
+                z += delta
+            if button == "moveZM":
+                z -= delta
+            self.Jog(x, y, z, 0)
+        else:
+            self.Jog(0, 0, 0, 0)
+        
     def GoBtn_Click(self):
         DobotDll.SetPTPCmd(self.api, DobotDll.PTPMode.PTPMOVJXYZMode, float(self.goX.get()), float(self.goY.get()), float(self.goZ.get()), 0, isQueued = 0)[0]
         DobotDll.SetQueuedCmdStartExec(self.api)
         DobotDll.SetQueuedCmdStopExec(self.api)
         
     def __del__(self):
-        if self.state == 0:
+        try:
+            if self.state != None:
+                DobotDll.DisconnectDobot(self.api)
+            else:
+                pass
+        except:
             pass
-        else:
-            DobotDll.DisconnectDobot(self.api)
-
+        
+        
 class MyVideoCapture:
     def __init__(self, video_source = 0):
         self.vid = cv2.VideoCapture(video_source)
@@ -279,20 +362,30 @@ class MyVideoCapture:
             ret, frame = self.vid.read()
             if ret:
                 return(ret, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-#            else:
-#                return(ret, None)
-#        else:
-#            return(ret, None)
             
     def __del__(self):
         if self.vid.isOpened():
             self.vid.release()
 
+#class MyDobot:    
+#    def __init__(self):
+#        self.DobotApi = DobotDll.load()
+#        
+#    def dCon(self):          
+#        self.state = DobotDll.ConnectDobot(self.DobotApi, "", 115200)[0]
+#        DobotDll.SetQueuedCmdClear(self.DobotApi)
+#        self.OnMonitoring()
+#        if self.state != 0:
+#            DobotDll.DisconnectDobot(self.DobotApi)
+#            return "Connect"
+#        return "Disconnect"
+#    
+#    def OnMonitoring(self):
+#        self.positions = DobotDll.GetPose(self.api)
+#        return ['%.2f' % elem for elem in self.positions]
+    
+
 if __name__ == "__main__":
-    #MainApplication(tk.Tk(), "Product Inspection")
     root = tk.Tk()
     root.title('Product Inspection')
     MainApplication(root)
-    
-    #root.geometry('978x594')
-    #root.mainloop()
